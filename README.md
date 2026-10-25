@@ -33,6 +33,7 @@ World of Warcraft **3.3.5a (WotLK)** leveling addon: step-by-step guides from le
 ## Installation
 1. Download **QuickQuest** (this addon) **and** **QuickQuest_Guides** (the guide pack - required!).
 2. Copy both folders, `QuickQuest` and `QuickQuest_Guides`, into `World of Warcraft/Interface/AddOns/`.
+   With *Code → Download ZIP* each folder sits inside `<repo name>-main` – copy only the inner folder.
 3. Restart the game and make sure both are enabled in the addon list.
 
 Without QuickQuest_Guides the addon loads, but there are no guides to choose.

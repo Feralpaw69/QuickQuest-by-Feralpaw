@@ -6,6 +6,7 @@
 > QuickQuest itself contains no guides - download and install **both** folders, otherwise the guide list stays empty.
 
 World of Warcraft **3.3.5a (WotLK)** leveling addon: step-by-step guides from level 1 to 80 with a direction arrow, waypoints on the world map and minimap, quest item buttons and target buttons.
+<img width="975" height="569" alt="image" src="https://github.com/user-attachments/assets/60a68c56-7a17-45c3-ad4e-c845af145aa7" />
 
 ## Features
 - Guide window with the current step, its tasks and the next steps

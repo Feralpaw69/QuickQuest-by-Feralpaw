@@ -1,0 +1,24 @@
+## Interface: 30300
+## Title: |cff7fb2ffQuick|rQuest
+## Notes: Leveling guides 1-80 with direction arrow, map waypoints, quest item and target buttons.
+## Version: 1.0
+## SavedVariables: QuickQuestDB
+## SavedVariablesPerCharacter: QuickQuestCharDB
+
+Core.lua
+Data\Maps.lua
+Data\AreaNames.lua
+Data\QuestData.lua
+Engine\Tags.lua
+Engine\Map.lua
+Engine\Parser.lua
+Engine\Quests.lua
+Engine\Steps.lua
+Engine\Leveling.lua
+Engine\Waypoints.lua
+Engine\Automation.lua
+UI\Window.lua
+UI\Arrow.lua
+UI\Pins.lua
+UI\Buttons.lua
+UI\Options.lua

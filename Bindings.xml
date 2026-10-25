@@ -1,0 +1,10 @@
+<Bindings>
+	<Binding name="CLICK QuickQuestItem1:LeftButton" header="QUICKQUEST"></Binding>
+	<Binding name="CLICK QuickQuestItem2:LeftButton"></Binding>
+	<Binding name="CLICK QuickQuestItem3:LeftButton"></Binding>
+	<Binding name="CLICK QuickQuestItem4:LeftButton"></Binding>
+	<Binding name="CLICK QuickQuestTarget1:LeftButton"></Binding>
+	<Binding name="CLICK QuickQuestTarget2:LeftButton"></Binding>
+	<Binding name="CLICK QuickQuestTarget3:LeftButton"></Binding>
+	<Binding name="CLICK QuickQuestTarget4:LeftButton"></Binding>
+</Bindings>

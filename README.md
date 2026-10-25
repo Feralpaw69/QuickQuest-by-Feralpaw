@@ -17,6 +17,8 @@ World of Warcraft **3.3.5a (WotLK)** leveling addon: step-by-step guides from le
 - Experience rates for private servers: server rate, heirlooms and your own buffs (5x with +20% and +50% = 9x)
 - Skips quests that are far below your level (and quests whose pre quest was skipped)
 - Suggests a guide for your level when you outlevel the current one
+- Jumps to your quest progress when you choose a guide (quests you already turned in are skipped, the guide starts at the quest you have)
+- **Quest for gold mode** for level 80: every quest of the guide, no level based skipping or grinding, the full route and automatically the reward that sells for the most
 - Colour themes, Blizzard or pixel frame style
 - Options under *Esc → Interface → AddOns → QuickQuest*
 

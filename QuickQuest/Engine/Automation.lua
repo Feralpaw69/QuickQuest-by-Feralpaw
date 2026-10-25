@@ -50,7 +50,21 @@ QQ:On("QUEST_COMPLETE", function()
 	if not Enabled("turnin") then return end
 	if not Wanted("turnin")[Norm(GetTitleText())] then return end
 	local choices = GetNumQuestChoices() or 0
-	if choices <= 1 then GetQuestReward(choices) end -- with several rewards the choice stays yours
+	if choices <= 1 then
+		GetQuestReward(choices)
+	elseif QQ:IsGoldMode() then
+		-- Quest for gold: take the reward that sells for the most
+		local best, bestValue = nil, -1
+		for i = 1, choices do
+			local link = GetQuestItemLink("choice", i)
+			local _, _, count = GetQuestItemInfo("choice", i)
+			local price = link and select(11, GetItemInfo(link))
+			if not price then return end -- unknown item: the choice stays yours
+			local value = price * (count or 1)
+			if value > bestValue then best, bestValue = i, value end
+		end
+		if best then GetQuestReward(best) end
+	end -- otherwise the choice stays yours
 end)
 
 local function TrySelect(names, count, getName, select)

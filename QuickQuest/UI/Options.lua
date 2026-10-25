@@ -392,6 +392,12 @@ function Options:Init()
 		return { { text = "Aldor", value = "aldor" }, { text = "Scryers", value = "scryer" } }
 	end, function() return QQ.db.shattrath or "aldor" end, function(v) QQ.db.shattrath = v end)
 	Check(auto, 16, -292, "Suggest a guide for my level when outleveled", nil, function() return x.suggestNextGuide end, function(v) x.suggestNextGuide = v end)
+	Check(auto, 16, -318, "Jump to my quest progress when a guide is chosen", "Steps of quests you already turned in are skipped and the guide starts at the quest you have.", function() return x.syncProgress end, function(v) x.syncProgress = v end)
+	Header(auto, "Quest for gold", -356)
+	Check(auto, 16, -378, "Quest for gold mode", "For level 80 characters: every quest of the guide is done (no skipping of low quests or by level, no grinding), the full route is used and the reward that sells for the most is taken automatically.", function() return x.goldMode end, function(v)
+		x.goldMode = v
+		if v then QQ:ResetSkipped() end
+	end)
 
 	-- experience
 	local xp = NewPanel("Experience", "QuickQuest")

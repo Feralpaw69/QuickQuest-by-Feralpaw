@@ -72,6 +72,8 @@ QQ.defaults = {
 		skipLowQuests = true,
 		lowQuestDiff = 6,
 		suggestNextGuide = true,
+		goldMode = false, -- "Quest for gold": every quest, no xp based skipping, best paying reward
+		syncProgress = true, -- jump to the own quest progress when a guide is chosen
 		skipXpSteps = true,
 		buffs = {}, -- { enabled, percent, aura }
 	},

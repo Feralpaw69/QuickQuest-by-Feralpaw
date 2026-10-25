@@ -54,9 +54,14 @@ function QQ:GetXPRate()
 	return rate
 end
 
+function QQ:IsGoldMode()
+	return self.db and self.db.xp.goldMode and true or false
+end
+
 -- "#xprate <1.5", "#xprate >1.49", "#xprate 1.2-1.5"
+-- (Quest for gold mode: always the full 1x route, the one with every quest)
 function QQ:XPRateMatches(spec)
-	local rate = self:GetXPRate()
+	local rate = self:IsGoldMode() and 1 or self:GetXPRate()
 	local op, a, b = tostring(spec):match("^%s*([<>]?)%s*([%d%.]+)%-?([%d%.]*)")
 	a, b = tonumber(a), tonumber(b)
 	if not a then return true end
@@ -113,7 +118,7 @@ end
 
 function Leveling:IsQuestTooLow(id)
 	local x = QQ.db.xp
-	if not x.skipLowQuests or not id then return false end
+	if not x.skipLowQuests or x.goldMode or not id then return false end
 	local level = UnitLevel("player") or 1
 	local diff = tonumber(x.lowQuestDiff) or 6
 	if lowLevel ~= level or lowDiff ~= diff then lowCache, lowLevel, lowDiff = {}, level, diff end
@@ -145,7 +150,7 @@ local function Blocked(id, depth)
 end
 
 function Leveling:IsQuestBlocked(id)
-	if not QQ.db.xp.skipLowQuests or not id then return false end
+	if not QQ.db.xp.skipLowQuests or QQ.db.xp.goldMode or not id then return false end
 	return Blocked(id, 0)
 end
 
@@ -160,7 +165,7 @@ local PASSIVE = {
 local QUEST_ITEMS = { collect = true, use = true }
 
 function Leveling:IsLowQuestStep(step)
-	if not QQ.db.xp.skipLowQuests or not step.elements then return false end
+	if not QQ.db.xp.skipLowQuests or QQ.db.xp.goldMode or not step.elements then return false end
 	local found = false
 	for _, e in ipairs(step.elements) do
 		if QUEST_ITEMS[e.kind] and not (e.questId and not self:IsQuestTooLow(e.questId) and not self:IsQuestBlocked(e.questId)) then
@@ -305,7 +310,7 @@ StaticPopupDialogs["QUICKQUEST_NEXT_GUIDE"] = {
 
 local announced = {}
 function Leveling:CheckOutleveled()
-	if not QQ.db.xp.suggestNextGuide or InCombatLockdown() then return end
+	if not QQ.db.xp.suggestNextGuide or QQ.db.xp.goldMode or InCombatLockdown() then return end
 	local guide = QQ.guide
 	if not guide or guide.farm then return end
 	local a, b = QQ:GuideRange(guide)

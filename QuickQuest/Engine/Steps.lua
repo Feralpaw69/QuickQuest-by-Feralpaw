@@ -142,6 +142,8 @@ eval.waypoint = function() return INFO end
 
 eval.xp = function(e)
 	local reached = XPReached(e.level, e)
+	-- Quest for gold: no grinding and no level based skipping (only "needs level X" stays)
+	if QQ.db and QQ.db.xp.goldMode and not (e.skip and e.op == "<") then return INFO end
 	if e.skip then
 		if QQ.db and not QQ.db.xp.skipXpSteps and e.op ~= "<" then return INFO end
 		if reached == (e.op ~= "<") then return SKIP end
@@ -238,6 +240,7 @@ eval.cooldown = function(e)
 	return INFO
 end
 eval.maxlevel = function(e)
+	if QQ.db and QQ.db.xp.goldMode then return INFO end
 	if (UnitLevel("player") or 1) > e.level then return SKIP end
 	return INFO
 end
@@ -612,6 +615,70 @@ function QQ:GoToStep(index)
 end
 
 ---------------------------------------------------------------------------
+-- jump to the own progress: quests already turned in or in the quest log
+---------------------------------------------------------------------------
+local PROGRESS_KINDS = { accept = true, turnin = true, complete = true }
+
+-- Quest for gold: steps skipped earlier (low quests, level) come back
+function QQ:ResetSkipped(guide)
+	guide = guide or self.guide
+	if not guide or not guide.steps then return end
+	local state, first = GuideState(guide), nil
+	for j, st in pairs(state) do
+		if st == "skip" then
+			state[j] = nil
+			if not first or j < first then first = j end
+		end
+	end
+	if first and first < CurrentIndex(guide) then SetCurrentIndex(guide, first) end
+	self.holdIndex = nil
+end
+
+function QQ:SyncProgress(guide)
+	guide = guide or self.guide
+	if not guide or not guide.steps then return false end
+	local steps = guide.steps
+	-- last step with a quest you already have or turned in
+	local anchor
+	for i, step in ipairs(steps) do
+		if not StepFilteredOut(step, guide) then
+			for _, e in ipairs(step.elements) do
+				if PROGRESS_KINDS[e.kind] and e.questId and (Quests:IsTurnedIn(e.questId) or Quests:IsOnQuest(e.questId)) then
+					anchor = i
+					break
+				end
+			end
+		end
+	end
+	if not anchor then return false end
+	-- the first quest of yours that still has work, shortly before that
+	local start = anchor
+	for i = math.max(1, anchor - 80), anchor do
+		local step = steps[i]
+		local found
+		if not StepFilteredOut(step, guide) then
+			for _, e in ipairs(step.elements) do
+				local id = e.questId
+				if id and Quests:IsOnQuest(id) and (e.kind == "turnin" or (e.kind == "complete" and not Quests:IsObjectiveDone(id, e.objective))) then
+					found = true
+					break
+				end
+			end
+		end
+		if found then start = i break end
+	end
+	if start <= CurrentIndex(guide) then return false end -- only forward
+	local state = GuideState(guide)
+	for j = 1, start - 1 do
+		if not state[j] then state[j] = "done" end
+	end
+	ClearSkips(guide, start)
+	self.holdIndex = nil
+	SetCurrentIndex(guide, start)
+	return true
+end
+
+---------------------------------------------------------------------------
 -- guides
 ---------------------------------------------------------------------------
 function QQ:LoadGuide(guide, fromStart)
@@ -628,6 +695,12 @@ function QQ:LoadGuide(guide, fromStart)
 	end
 	wipe(events)
 	lastSignature = nil
+	if self.db.xp.goldMode then self:ResetSkipped(guide) end
+	if not fromStart and self.db.xp.syncProgress then
+		if self:SyncProgress(guide) then self:Print("Jumped to your quest progress in this guide.") end
+		-- the quest history comes a moment after login: check again then
+		if not Quests.historyLoaded then self.syncPending = guide end
+	end
 	self:Fire("QQ_GUIDE_LOADED", guide)
 	self:UpdateSteps()
 end
@@ -744,4 +817,13 @@ QQ:On("QQ_LOGIN", function()
 	if not guide then guide = QQ:FindDefaultGuide() end
 	if guide then QQ:LoadGuide(guide) end
 	QQ:Every(1, function() QQ:UpdateSteps() end)
+end)
+
+QQ:On("QQ_QUEST_HISTORY", function()
+	local guide = QQ.syncPending
+	QQ.syncPending = nil
+	if guide and guide == QQ.guide and QQ.db.xp.syncProgress and QQ:SyncProgress(guide) then
+		QQ:Print("Jumped to your quest progress in this guide.")
+		QQ:UpdateSteps()
+	end
 end)
